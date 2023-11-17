@@ -24,34 +24,38 @@
             {
                 string[] files = Directory.EnumerateFiles(directoryPath, "*", SearchOption.TopDirectoryOnly).ToArray();
 
+                var folder = new Folder()
+                {
+                    //Id = Guid.NewGuid(),
+                    Name = new DirectoryInfo(directoryPath).Name,
+                    Files = new List<File>()
+                };
+
                 foreach (string filePath in files)
                 {
                     FileInfo fileInfo = new FileInfo(filePath);
 
-                    var folder = new Folder()
+                    var file = new File
                     {
+
                         //Id = Guid.NewGuid(),
-                        Name = new DirectoryInfo(directoryPath).Name,
-                        Files = new List<File>
-                    {
-                        new File()
-                        {
-                            //Id = Guid.NewGuid(),
-                            Name = fileInfo.Name,
-                            FullDirectory = fileInfo.FullName,
-                            Size = (int)fileInfo.Length
-                        }
-                    }
+                        Name = fileInfo.Name,
+                        FullDirectory = fileInfo.FullName,
+                        Size = (int)fileInfo.Length
                     };
-                    dbContext.Folders.Add(folder);
-                    dbContext.SaveChanges();
+
+                    folder.Files.Add(file);
                 }
+                dbContext.Folders.Add(folder);
+                dbContext.SaveChanges();
+
 
                 string[] subdirectories = Directory.GetDirectories(directoryPath);
                 foreach (string subdirectory in subdirectories)
                 {
                     ScanDirectory(subdirectory, dbContext);
                 }
+
             }
 
 
